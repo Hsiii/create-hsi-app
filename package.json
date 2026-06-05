@@ -1,8 +1,15 @@
 {
-    "name": "hsi-app",
+    "name": "@hsiii/hsi-app",
     "version": "0.1.0",
     "type": "module",
     "packageManager": "bun@1.3.9",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Hsiii/frontend-template.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
     "engines": {
         "bun": ">=1.3.9"
     },
