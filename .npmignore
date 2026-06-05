@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Local and platform files
+.DS_Store
+
+# Repository automation
+.github/
+
+# Registry auth config
+.npmrc
