@@ -8,6 +8,9 @@ dist/
 # IDE files
 .vscode/
 
+# GitHub config
+.github/
+
 # Lock files
 bun.lock
 package-lock.json
