@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "frontend-template",
+      "name": "hsi-app",
       "dependencies": {
         "@tanstack/react-query": "^5.90.10",
         "lucide-react": "^0.554.0",

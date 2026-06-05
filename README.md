@@ -1,4 +1,4 @@
-# Frontend Template
+# hsi-app
 
 A reusable baseline repo for frontend projects with:
 

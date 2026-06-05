@@ -1,6 +1,5 @@
 {
-    "name": "frontend-template",
-    "private": true,
+    "name": "hsi-app",
     "version": "0.1.0",
     "type": "module",
     "packageManager": "bun@1.3.9",
