@@ -10,7 +10,7 @@ import {
 import { basename, join, resolve } from 'node:path';
 
 const templateRepo = 'https://github.com/Hsiii/frontend-template.git';
-const defaultAppName = 'my-hsi-app';
+const defaultAppName = 'my-app';
 const targetArg = process.argv[2] ?? defaultAppName;
 const targetPath = resolve(targetArg);
 const appName = toPackageName(basename(targetPath));
@@ -52,6 +52,9 @@ function updatePackageJson() {
     packageJson.version = '0.1.0';
     delete packageJson.repository;
     delete packageJson.publishConfig;
+    delete packageJson.scripts['check:create'];
+    packageJson.scripts.check =
+        'bun run typecheck && bun run lint && bun run format:check && bun run build';
 
     writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`);
 }
@@ -64,7 +67,7 @@ function updateBunLock() {
     }
 
     const lock = readFileSync(lockPath, 'utf8').replace(
-        '"name": "@hsiii/hsi-app"',
+        '"name": "frontend-template"',
         `"name": "${appName}"`
     );
 
@@ -72,18 +75,26 @@ function updateBunLock() {
 }
 
 function updateAppText() {
-    replaceInFile(join(targetPath, 'index.html'), '<title>hsi-app</title>', {
-        with: `<title>${appName}</title>`,
-    });
-    replaceInFile(join(targetPath, 'src/components/App.tsx'), '>hsi-app<', {
-        with: `>${appName}<`,
-    });
+    replaceInFile(
+        join(targetPath, 'index.html'),
+        '<title>Frontend Template</title>',
+        {
+            with: `<title>${appName}</title>`,
+        }
+    );
+    replaceInFile(
+        join(targetPath, 'src/components/App.tsx'),
+        '>Frontend Template<',
+        {
+            with: `>${appName}<`,
+        }
+    );
 }
 
 function writeAppReadme() {
     const readme = `# ${appName}
 
-Created from the hsi-app frontend template.
+Created from the frontend template.
 
 ## Install
 

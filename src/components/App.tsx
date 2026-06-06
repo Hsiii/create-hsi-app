@@ -4,7 +4,7 @@ export function App(): JSX.Element {
     return (
         <main className='app'>
             <section className='app__content'>
-                <p className='app__eyebrow'>hsi-app</p>
+                <p className='app__eyebrow'>Frontend Template</p>
                 <h1 className='app__title'>
                     Bun, Vite, React, and TypeScript.
                 </h1>

@@ -1,11 +1,7 @@
-# hsi-app
+# Frontend Template
 
-A reusable frontend baseline that is maintained in two forms:
-
-- Template repo: use this repository as the source template for new frontend
-  apps.
-- Package artifact: install the published package from npm as `hsi-app` or
-  from GitHub Packages as `@hsiii/hsi-app`.
+A reusable frontend baseline for new apps. The supported distribution path is
+`npm create hsi-app@latest`.
 
 The template includes:
 
@@ -38,18 +34,6 @@ gh repo create my-app --template Hsiii/frontend-template --clone
 cd my-app
 bun i
 bun run dev
-```
-
-Install the published package from npm:
-
-```bash
-npm install hsi-app
-```
-
-Install the published package from GitHub Packages:
-
-```bash
-npm install @hsiii/hsi-app --registry=https://npm.pkg.github.com
 ```
 
 ## Install
