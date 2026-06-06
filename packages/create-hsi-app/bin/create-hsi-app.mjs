@@ -401,28 +401,11 @@ function resolvePackageManager(args) {
         case '--yarn':
             return 'yarn';
         case '--bun':
-            return 'bun';
         case undefined:
-            return detectPackageManager();
+            return 'bun';
         default:
             fail(`Unsupported package manager flag: ${selectedFlags[0]}`);
     }
-}
-
-function detectPackageManager() {
-    const userAgent = process.env.npm_config_user_agent ?? '';
-
-    if (!userAgent) {
-        return 'bun';
-    }
-
-    const detectedPackageManager = userAgent.split(' ')[0]?.split('/')[0];
-
-    if (!packageManagers.includes(detectedPackageManager)) {
-        return 'bun';
-    }
-
-    return detectedPackageManager;
 }
 
 function packageManagerDeclaration() {

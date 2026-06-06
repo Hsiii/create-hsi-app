@@ -36,8 +36,8 @@ name.
 
 ## Default Behavior
 
-- The scaffolded app follows the package manager that invoked `create`.
-- Passing `--bun`, `--npm`, `--pnpm`, or `--yarn` overrides that detection.
+- Bun is the default package manager for the scaffolded app.
+- Passing `--npm`, `--pnpm`, or `--yarn` overrides the default.
 - Dependencies are installed automatically unless `--noInstall` is passed.
 - In an interactive terminal, the CLI prompts to create a git repository unless
   `--noRepo` is passed.
@@ -55,7 +55,7 @@ name.
 
 ## Examples
 
-Scaffold into the current directory and let the CLI infer the package manager:
+Scaffold into the current directory with the default Bun setup:
 
 ```bash
 npm create hsi-app@latest
