@@ -44,7 +44,8 @@ a {
     display: grid;
     justify-items: center;
     gap: var(--space-24);
-    width: min(100%, var(--size-content-max));
+    width: fit-content;
+    max-width: 100%;
     text-align: center;
 }
 
@@ -54,7 +55,6 @@ a {
 }
 
 .app__description {
-    max-width: var(--measure-copy);
     color: var(--clr-text-muted);
 }
 
