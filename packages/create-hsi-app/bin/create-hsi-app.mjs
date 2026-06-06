@@ -12,7 +12,11 @@ import { basename, join, resolve } from 'node:path';
 const templateRepo = 'https://github.com/Hsiii/frontend-template.git';
 const templateTag = 'v0.1.5';
 const defaultAppName = 'my-app';
-const targetArg = process.argv[2] ?? defaultAppName;
+const packageManagers = ['bun', 'npm', 'pnpm', 'yarn'];
+const rawArgs = process.argv.slice(2);
+const selectedPackageManager = parsePackageManagerFlag(rawArgs);
+const targetArg =
+    rawArgs.find((arg) => !arg.startsWith('--')) ?? defaultAppName;
 const targetPath = resolve(targetArg);
 const appName = toPackageName(basename(targetPath));
 
@@ -40,17 +44,14 @@ rmSync(join(targetPath, 'scripts'), { force: true, recursive: true });
 updatePackageJson();
 updateBunLock();
 updateAppText();
+updatePackageManagerFiles();
 writeAppReadme();
 
 console.log(`\nCreated ${appName} in ${targetPath}\n`);
 console.log('Next steps:');
 console.log(`  cd ${targetArg}`);
-console.log('  bun install');
-console.log('    or pnpm install');
-console.log('    or yarn install');
-console.log('  bun run dev');
-console.log('    or pnpm dev');
-console.log('    or yarn dev');
+console.log(`  ${installCommand()}`);
+console.log(`  ${devCommand()}`);
 
 function run(command, args) {
     try {
@@ -75,6 +76,7 @@ function updatePackageJson() {
     delete packageJson.scripts['release:create'];
     packageJson.scripts.check =
         'tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && vite build';
+    packageJson.packageManager = packageManagerDeclaration();
 
     writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`);
 }
@@ -83,6 +85,11 @@ function updateBunLock() {
     const lockPath = join(targetPath, 'bun.lock');
 
     if (!existsSync(lockPath)) {
+        return;
+    }
+
+    if (selectedPackageManager !== 'bun') {
+        rmSync(lockPath, { force: true });
         return;
     }
 
@@ -111,7 +118,44 @@ function updateAppText() {
     );
 }
 
+function updatePackageManagerFiles() {
+    rmSync(join(targetPath, 'bunfig.toml'), { force: true });
+    rmSync(join(targetPath, '.npmrc'), { force: true });
+    rmSync(join(targetPath, 'pnpm-workspace.yaml'), { force: true });
+    rmSync(join(targetPath, '.yarnrc.yml'), { force: true });
+
+    switch (selectedPackageManager) {
+        case 'bun':
+            writeFileSync(
+                join(targetPath, 'bunfig.toml'),
+                '[install]\nminimumReleaseAge = 604800\n'
+            );
+            return;
+        case 'npm':
+            writeFileSync(join(targetPath, '.npmrc'), 'min-release-age=7\n');
+            return;
+        case 'pnpm':
+            writeFileSync(
+                join(targetPath, 'pnpm-workspace.yaml'),
+                'minimumReleaseAge: 10080\n'
+            );
+            return;
+        case 'yarn':
+            writeFileSync(
+                join(targetPath, '.yarnrc.yml'),
+                'npmMinimalAgeGate: 7d\n'
+            );
+            return;
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
+}
+
 function writeAppReadme() {
+    const installLine = installCommand();
+    const devLine = devCommand();
+    const checkLine = checkCommand();
+    const securityNote = securityNoteForPackageManager();
     const readme = `# ${appName}
 
 Created from the frontend template.
@@ -119,32 +163,22 @@ Created from the frontend template.
 ## Install
 
 \`\`\`bash
-bun install
-# or
-pnpm install
-# or
-yarn install
+${installLine}
 \`\`\`
 
 ## Develop
 
 \`\`\`bash
-bun run dev
-# or
-pnpm dev
-# or
-yarn dev
+${devLine}
 \`\`\`
 
 ## Check
 
 \`\`\`bash
-bun run check
-# or
-pnpm run check
-# or
-yarn run check
+${checkLine}
 \`\`\`
+
+${securityNote}
 `;
 
     writeFileSync(join(targetPath, 'README.md'), readme);
@@ -165,6 +199,101 @@ function toPackageName(value) {
         .replaceAll(/-{2,}/g, '-');
 
     return name || defaultAppName;
+}
+
+function parsePackageManagerFlag(args) {
+    const selectedFlags = args.filter((arg) =>
+        ['--bun', '--npm', '--pnpm', '--yarn'].includes(arg)
+    );
+
+    if (selectedFlags.length > 1) {
+        fail('Pass only one of --bun, --npm, --pnpm, or --yarn.');
+    }
+
+    switch (selectedFlags[0]) {
+        case '--npm':
+            return 'npm';
+        case '--pnpm':
+            return 'pnpm';
+        case '--yarn':
+            return 'yarn';
+        case '--bun':
+        case undefined:
+            return 'bun';
+        default:
+            fail(`Unsupported package manager flag: ${selectedFlags[0]}`);
+    }
+}
+
+function packageManagerDeclaration() {
+    switch (selectedPackageManager) {
+        case 'bun':
+            return 'bun@1.3.9';
+        case 'npm':
+            return 'npm@11';
+        case 'pnpm':
+            return 'pnpm@10';
+        case 'yarn':
+            return 'yarn@4';
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
+}
+
+function installCommand() {
+    switch (selectedPackageManager) {
+        case 'bun':
+            return 'bun install';
+        case 'npm':
+            return 'npm install';
+        case 'pnpm':
+            return 'pnpm install';
+        case 'yarn':
+            return 'yarn install';
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
+}
+
+function devCommand() {
+    switch (selectedPackageManager) {
+        case 'yarn':
+            return 'yarn dev';
+        case 'bun':
+        case 'npm':
+        case 'pnpm':
+            return `${selectedPackageManager} run dev`;
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
+}
+
+function checkCommand() {
+    switch (selectedPackageManager) {
+        case 'yarn':
+            return 'yarn check';
+        case 'bun':
+        case 'npm':
+        case 'pnpm':
+            return `${selectedPackageManager} run check`;
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
+}
+
+function securityNoteForPackageManager() {
+    switch (selectedPackageManager) {
+        case 'bun':
+            return 'This project includes `bunfig.toml` with `minimumReleaseAge = 604800`.';
+        case 'npm':
+            return 'This project includes `.npmrc` with `min-release-age=7`.';
+        case 'pnpm':
+            return 'This project includes `pnpm-workspace.yaml` with `minimumReleaseAge: 10080`.';
+        case 'yarn':
+            return 'This project includes `.yarnrc.yml` with `npmMinimalAgeGate: 7d`.';
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
 }
 
 function fail(message) {

@@ -5,7 +5,7 @@ A reusable frontend baseline for new apps. The supported create entrypoints are
 
 The template includes:
 
-- Bun, pnpm, or Yarn package management
+- Bun, npm, pnpm, or Yarn package management
 - Vite for dev/build
 - React 19
 - TypeScript 6
@@ -24,54 +24,34 @@ Create a new app with npm:
 npm create hsi-app@latest my-app
 cd my-app
 bun install
-# or pnpm install
-# or yarn install
-
 bun run dev
-# or pnpm dev
-# or yarn dev
 ```
 
 Create a new app with pnpm:
 
 ```bash
-pnpm create hsi-app my-app
+pnpm create hsi-app my-app --pnpm
 cd my-app
-bun install
-# or pnpm install
-# or yarn install
-
-bun run dev
-# or pnpm dev
-# or yarn dev
+pnpm install
+pnpm run dev
 ```
 
 Create a new app with Yarn:
 
 ```bash
-yarn create hsi-app my-app
+yarn create hsi-app my-app --yarn
 cd my-app
-bun install
-# or pnpm install
-# or yarn install
-
-bun run dev
-# or pnpm dev
-# or yarn dev
+yarn install
+yarn dev
 ```
 
 Create a new app with Bun:
 
 ```bash
-bun create hsi-app my-app
+bun create hsi-app my-app --bun
 cd my-app
 bun install
-# or pnpm install
-# or yarn install
-
 bun run dev
-# or pnpm dev
-# or yarn dev
 ```
 
 Create a new app from the GitHub template:
@@ -80,13 +60,15 @@ Create a new app from the GitHub template:
 gh repo create my-app --template Hsiii/frontend-template --clone
 cd my-app
 bun install
-# or pnpm install
-# or yarn install
-
 bun run dev
-# or pnpm dev
-# or yarn dev
 ```
+
+Package-manager flags:
+
+- `--bun`: default
+- `--npm`: write `.npmrc` with `min-release-age=7`
+- `--pnpm`: write `pnpm-workspace.yaml` with `minimumReleaseAge: 10080`
+- `--yarn`: write `.yarnrc.yml` with `npmMinimalAgeGate: 7d`
 
 ## Maintainers
 
