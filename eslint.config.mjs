@@ -4,7 +4,12 @@ export default [
     ...completeConfigBase,
 
     {
-        ignores: ['dist/**', 'node_modules/**', 'packages/create-hsi-app/**'],
+        ignores: [
+            'dist/**',
+            'node_modules/**',
+            'packages/create-hsi-app/**',
+            'scripts/**',
+        ],
     },
 
     {

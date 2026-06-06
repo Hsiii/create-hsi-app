@@ -21,7 +21,9 @@
         "format:check": "bunx prettier . --check",
         "typecheck": "bunx tsc -p tsconfig.json --noEmit",
         "check:create": "node --check packages/create-hsi-app/bin/create-hsi-app.mjs",
-        "check": "bun run typecheck && bun run lint && bun run check:create && bun run format:check && bun run build"
+        "check:release": "node --check scripts/release-create-hsi-app.mjs",
+        "release:create": "node scripts/release-create-hsi-app.mjs",
+        "check": "bun run typecheck && bun run lint && bun run check:create && bun run check:release && bun run format:check && bun run build"
     },
     "dependencies": {
         "@tanstack/react-query": "5.100.11",

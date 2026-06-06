@@ -11,6 +11,7 @@ dist/
 # Repository automation
 .github/
 packages/create-hsi-app/
+scripts/
 
 # Registry auth config
 .npmrc

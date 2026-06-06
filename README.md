@@ -43,22 +43,26 @@ be published.
 
 Release flow:
 
-1. Bump the version in the root [`package.json`](/Users/hsi/Documents/Projects/Archive/frontend-template/package.json:1)
-   and in [packages/create-hsi-app/package.json](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/package.json:1).
-2. Update `templateTag` in
-   [packages/create-hsi-app/bin/create-hsi-app.mjs](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/bin/create-hsi-app.mjs:12)
-   to the matching tag, then run `bun run check`.
-3. Create and push the matching git tag, for example `v0.1.5`.
-4. Publish npm: `cd packages/create-hsi-app && npm publish --registry=https://registry.npmjs.org`.
-5. Push the matching `v*` tag to publish the GitHub Packages alias
+1. Start from a clean worktree on `main`, then run `bun run release:create`.
+2. Choose `patch`, `minor`, or `major` when prompted. The script bumps the
+   root [`package.json`](/Users/hsi/Documents/Projects/Archive/frontend-template/package.json:1),
+   [packages/create-hsi-app/package.json](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/package.json:1),
+   and `templateTag` in
+   [packages/create-hsi-app/bin/create-hsi-app.mjs](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/bin/create-hsi-app.mjs:12),
+   then runs `bun run check`, commits, tags, pushes `main`, and pushes the tag.
+   Use `bun run release:create -- --dry-run` to verify the flow without
+   creating or pushing git objects.
+3. Publish npm manually: `cd packages/create-hsi-app && npm publish --registry=https://registry.npmjs.org --otp=<current-code>`.
+4. The matching `v*` tag publishes the GitHub Packages alias
    `@hsiii/create-hsi-app` automatically. GitHub Packages only supports scoped
    npm package names, so this mirror must stay scoped.
-6. Keep `hsi-app` deprecated on npm. GitHub Packages does not offer the same
+5. Keep `hsi-app` deprecated on npm. GitHub Packages does not offer the same
    npm deprecation flow; remove the legacy `@hsiii/hsi-app` package instead of
    trying to attach a deprecation message there.
 
-The workflow under `.github/workflows/` is ignored by npm tarballs and removed
-by `create-hsi-app`. Direct GitHub template clones will still include it.
+The repo-only tooling under `.github/workflows/` and `scripts/` is ignored by
+npm tarballs and removed by `create-hsi-app`. Direct GitHub template clones
+will still include it.
 
 ## Install
 
