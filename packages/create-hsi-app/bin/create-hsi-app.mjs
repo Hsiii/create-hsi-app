@@ -29,7 +29,7 @@ const packageManagers = ['bun', 'npm', 'pnpm', 'yarn'];
 const rawArgs = process.argv.slice(2);
 const parsedArgs = parseCliArgs(rawArgs);
 const selectedPackageManager = resolvePackageManager(parsedArgs);
-const shouldInstallDependencies = !(
+let shouldInstallDependencies = !(
     parsedArgs.noInstall || readNpmBooleanFlag('noinstall')
 );
 const shouldSkipRepoSetup = parsedArgs.noRepo || readNpmBooleanFlag('norepo');
@@ -48,6 +48,7 @@ async function main() {
     }
 
     intro(appName, targetPath);
+    shouldInstallDependencies = await planInstallDependencies();
     const repoPlan = await planRepoSetup();
     closePrompts();
 
@@ -247,6 +248,20 @@ ${securityNote}
     writeFileSync(join(targetPath, 'README.md'), readme);
 }
 
+async function planInstallDependencies() {
+    if (!shouldInstallDependencies || !isInteractive) {
+        return shouldInstallDependencies;
+    }
+
+    const shouldInstall = await confirm({
+        message: `Should I run "${installCommand()}" for you?`,
+        initialValue: true,
+    });
+    gap();
+
+    return shouldInstall;
+}
+
 async function planRepoSetup() {
     if (shouldSkipRepoSetup || !isInteractive) {
         return null;
@@ -262,15 +277,27 @@ async function planRepoSetup() {
         return null;
     }
 
+    const repoPlan = {
+        git: true,
+        github: false,
+    };
     const hasGitHubCli = canUseGitHubCli();
 
     if (!hasGitHubCli) {
         warn(
             'GitHub CLI is unavailable or not authenticated; keeping a local repository only.'
         );
-        return {
-            mode: 'local',
-        };
+        return repoPlan;
+    }
+
+    const shouldCreateGitHubRepo = await confirm({
+        message: 'Create a GitHub repository too?',
+        initialValue: true,
+    });
+    gap();
+
+    if (!shouldCreateGitHubRepo) {
+        return repoPlan;
     }
 
     const defaultRepoName = basename(targetPath);
@@ -294,7 +321,8 @@ async function planRepoSetup() {
     gap();
 
     return {
-        mode: 'github',
+        ...repoPlan,
+        github: true,
         repoName,
         visibility,
     };
@@ -309,7 +337,7 @@ async function applyRepoPlan(repoPlan) {
     section('Initializing local git repository');
     initLocalRepo();
 
-    if (repoPlan.mode !== 'github') {
+    if (!repoPlan.github) {
         return;
     }
 
