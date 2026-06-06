@@ -18,7 +18,7 @@
         "format:check": "prettier . --check",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "release": "node scripts/release-create-hsi-app.mjs",
-        "smoke:create-hsi-app": "node scripts/smoke-create-hsi-app.mjs",
+        "smoke": "node scripts/smoke-create-hsi-app.mjs",
         "check": "tsc -p tsconfig.json --noEmit && eslint . && node --check packages/create-hsi-app/bin/create-hsi-app.mjs && node --check scripts/release-create-hsi-app.mjs && node --check scripts/smoke-create-hsi-app.mjs && prettier . --check && vite build"
     },
     "dependencies": {

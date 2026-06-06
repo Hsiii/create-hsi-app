@@ -14,11 +14,11 @@
 Run the local CLI end-to-end with a temporary target directory:
 
 ```bash
-bun run smoke:create-hsi-app
+bun run smoke
 ```
 
 Pass through normal CLI flags when needed:
 
 ```bash
-bun run smoke:create-hsi-app -- --npm --noInstall
+bun run smoke -- --npm --noInstall
 ```
