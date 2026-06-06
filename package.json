@@ -3,27 +3,23 @@
     "version": "0.1.5",
     "private": true,
     "type": "module",
-    "packageManager": "bun@1.3.9",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Hsiii/frontend-template.git"
-    },
-    "engines": {
-        "bun": ">=1.3.9"
     },
     "scripts": {
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "lint": "bunx eslint .",
-        "lint:fix": "bunx eslint . --fix",
-        "format": "bunx prettier . --write",
-        "format:check": "bunx prettier . --check",
-        "typecheck": "bunx tsc -p tsconfig.json --noEmit",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier . --write",
+        "format:check": "prettier . --check",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
         "check:create": "node --check packages/create-hsi-app/bin/create-hsi-app.mjs",
         "check:release": "node --check scripts/release-create-hsi-app.mjs",
         "release:create": "node scripts/release-create-hsi-app.mjs",
-        "check": "bun run typecheck && bun run lint && bun run check:create && bun run check:release && bun run format:check && bun run build"
+        "check": "tsc -p tsconfig.json --noEmit && eslint . && node --check packages/create-hsi-app/bin/create-hsi-app.mjs && node --check scripts/release-create-hsi-app.mjs && prettier . --check && vite build"
     },
     "dependencies": {
         "@tanstack/react-query": "5.100.11",

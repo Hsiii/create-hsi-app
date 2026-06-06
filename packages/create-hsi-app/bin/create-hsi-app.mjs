@@ -45,8 +45,12 @@ writeAppReadme();
 console.log(`\nCreated ${appName} in ${targetPath}\n`);
 console.log('Next steps:');
 console.log(`  cd ${targetArg}`);
-console.log('  bun i');
+console.log('  bun install');
+console.log('    or pnpm install');
+console.log('    or yarn install');
 console.log('  bun run dev');
+console.log('    or pnpm dev');
+console.log('    or yarn dev');
 
 function run(command, args) {
     try {
@@ -64,9 +68,13 @@ function updatePackageJson() {
     packageJson.version = '0.1.0';
     delete packageJson.repository;
     delete packageJson.publishConfig;
+    delete packageJson.packageManager;
+    delete packageJson.engines;
     delete packageJson.scripts['check:create'];
+    delete packageJson.scripts['check:release'];
+    delete packageJson.scripts['release:create'];
     packageJson.scripts.check =
-        'bun run typecheck && bun run lint && bun run format:check && bun run build';
+        'tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && vite build';
 
     writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`);
 }
@@ -111,19 +119,31 @@ Created from the frontend template.
 ## Install
 
 \`\`\`bash
-bun i
+bun install
+# or
+pnpm install
+# or
+yarn install
 \`\`\`
 
 ## Develop
 
 \`\`\`bash
 bun run dev
+# or
+pnpm dev
+# or
+yarn dev
 \`\`\`
 
 ## Check
 
 \`\`\`bash
 bun run check
+# or
+pnpm run check
+# or
+yarn run check
 \`\`\`
 `;
 

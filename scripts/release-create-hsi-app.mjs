@@ -47,7 +47,7 @@ async function main() {
     writeJson(createPackageJsonPath, createPackageJson);
     updateTemplateTag(nextTag);
 
-    run('bun', ['run', 'check']);
+    runPackageScript('check');
     run('git', ['add', 'package.json']);
     run('git', ['add', 'packages/create-hsi-app/package.json']);
     run('git', ['add', 'packages/create-hsi-app/bin/create-hsi-app.mjs']);
@@ -180,4 +180,32 @@ function run(command, args, options = {}) {
             `Failed to run: ${command} ${args.join(' ')}\n${error.stderr ?? error.message}`
         );
     }
+}
+
+function runPackageScript(scriptName) {
+    const packageManager = detectPackageManager();
+
+    switch (packageManager) {
+        case 'bun':
+            run('bun', ['run', scriptName]);
+            return;
+        case 'pnpm':
+            run('pnpm', ['run', scriptName]);
+            return;
+        case 'yarn':
+            run('yarn', ['run', scriptName]);
+            return;
+        default:
+            run('npm', ['run', scriptName]);
+    }
+}
+
+function detectPackageManager() {
+    const userAgent = process.env.npm_config_user_agent ?? '';
+
+    if (!userAgent) {
+        return 'npm';
+    }
+
+    return userAgent.split(' ')[0].split('/')[0];
 }
