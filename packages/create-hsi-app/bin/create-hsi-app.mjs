@@ -329,12 +329,12 @@ function initLocalRepo() {
 }
 
 function canUseGitHubCli() {
-    return Boolean(
+    return (
         run('gh', ['auth', 'status'], {
             cwd: targetPath,
             capture: true,
             allowFailure: true,
-        })
+        }) !== null
     );
 }
 
