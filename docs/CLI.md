@@ -8,3 +8,17 @@
 - `--noInstall`: skip the default dependency installation step
 - `--noRepo`: skip the interactive repository prompt and leave git
   uninitialized
+
+## Smoke Test
+
+Run the local CLI end-to-end with a temporary target directory:
+
+```bash
+bun run smoke:create-hsi-app
+```
+
+Pass through normal CLI flags when needed:
+
+```bash
+bun run smoke:create-hsi-app -- --npm --noInstall
+```
