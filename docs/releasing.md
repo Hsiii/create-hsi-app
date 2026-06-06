@@ -1,8 +1,7 @@
 # Releasing
 
 This repo is template source plus release tooling. The root package is private.
-Public npm publishes `create-hsi-app`; GitHub Packages publishes the scoped
-mirror `@hsiii/create-hsi-app`.
+Only `create-hsi-app` is published to public npm.
 
 ## Release Flow
 
@@ -23,8 +22,7 @@ mirror `@hsiii/create-hsi-app`.
     - create the matching `v*` tag
     - push `main`
     - push the tag
-5. The pushed tag triggers the GitHub Packages workflow for
-   `@hsiii/create-hsi-app`.
+5. Publish the package to public npm manually.
 
 ## Dry Run
 
@@ -39,31 +37,19 @@ The dry run updates files and runs checks, but skips commit, tag, and push.
 
 ## npm Publish
 
-GitHub Packages is tag-driven. Public npm publish is still manual:
+Public npm publish is manual:
 
 ```bash
 cd packages/create-hsi-app
 npm publish --registry=https://registry.npmjs.org --otp=<current-code>
 ```
 
-## GitHub Packages Usage
-
-GitHub's generated package install box shows dependency-install syntax. The
-package README is included in the scoped package so the package page also shows
-the actual scaffold command:
-
-```bash
-npm create @hsiii/hsi-app@latest --registry=https://npm.pkg.github.com
-```
-
 ## Legacy Package
 
-Keep `hsi-app` deprecated on npm. GitHub Packages does not support the same npm
-deprecation flow, so the legacy `@hsiii/hsi-app` package should be removed
-rather than documented as active.
+Keep `hsi-app` deprecated on npm.
 
 ## Notes
 
-- `.github/workflows/` and `scripts/` are ignored by npm tarballs.
+- `scripts/` is ignored by npm tarballs.
 - `create-hsi-app` removes repo-only tooling from generated apps.
 - Direct GitHub template clones still include repo-only tooling by design.

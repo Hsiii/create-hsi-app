@@ -72,8 +72,7 @@ async function main() {
         [
             '',
             `Released ${nextTag}.`,
-            'GitHub Packages publish should start from the tag push workflow.',
-            'Public npm is still manual:',
+            'Publish to public npm manually:',
             '  cd packages/create-hsi-app',
             '  npm publish --registry=https://registry.npmjs.org --otp=<current-code>',
             '',
