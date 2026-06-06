@@ -295,6 +295,7 @@ async function planRepoSetup() {
         warn(
             'GitHub CLI is unavailable or not authenticated; keeping a local repository only.'
         );
+        gap();
         return repoPlan;
     }
 

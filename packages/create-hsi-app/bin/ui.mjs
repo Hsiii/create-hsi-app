@@ -26,7 +26,7 @@ export function gap() {
 }
 
 export function warn(message) {
-    prompts.log.warn(message);
+    console.log(`${color.yellow('▲')}  ${message}`);
 }
 
 export function fail(message) {
