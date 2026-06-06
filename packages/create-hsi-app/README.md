@@ -1,7 +1,7 @@
 # create-hsi-app
 
-Scaffold a new Vite or Next.js + React + TypeScript app from the frontend
-template.
+Scaffold a new Vite or Next.js App Router SPA + React + TypeScript app from
+the frontend template.
 
 ## Usage
 

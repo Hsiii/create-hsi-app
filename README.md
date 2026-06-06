@@ -2,13 +2,11 @@
 
 Interactive CLI to kick start a frontend project.
 
-## The Stack
+## The Hsi-App Stack
 
-Choose Vite or Next.js, then scaffold an opinionated web development stack
-focused on simplicity:
+An opinionated web development stack focused on simplicity, development experience, and best practices. The stack includes:
 
-- Vite
-- Next.js App Router
+- Vite or Next.js App Router SPA export
 - React 19
 - TypeScript 6
 - TanStack React Query

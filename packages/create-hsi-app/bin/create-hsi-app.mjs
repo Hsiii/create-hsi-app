@@ -82,6 +82,7 @@ async function main() {
     console.log(`- framework: ${frameworkLabel(selectedFramework)}`);
     console.log(`- package.json: name, version, scripts, packageManager`);
     logFrameworkFileChanges();
+    console.log(`- .gitignore: framework build artifacts`);
     console.log(`- README.md: install/dev/check commands`);
     console.log(`- package manager config: ${packageManagerConfigFile()}`);
     if (selectedPackageManager === 'bun') {
@@ -89,6 +90,7 @@ async function main() {
     }
     updateFrameworkFiles();
     updateAppText();
+    updateGitIgnore();
     updatePackageManagerFiles();
     writeAppReadme();
 
@@ -135,7 +137,7 @@ function updatePackageJson() {
     if (selectedFramework === 'next') {
         packageJson.scripts.dev = 'next dev';
         packageJson.scripts.build = 'next build';
-        packageJson.scripts.preview = 'next start';
+        delete packageJson.scripts.preview;
         packageJson.scripts.check =
             'tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && next build';
         packageJson.dependencies.next = nextVersion;
@@ -189,6 +191,14 @@ function updateFrameworkFiles() {
     if (selectedFramework === 'next') {
         writeNextAppFiles();
     }
+}
+
+function updateGitIgnore() {
+    if (selectedFramework !== 'next') {
+        return;
+    }
+
+    appendGitIgnoreEntries(['.next/', 'next-env.d.ts']);
 }
 
 function updatePackageManagerFiles() {
@@ -250,7 +260,7 @@ function writeAppReadme() {
     const securityNote = securityNoteForPackageManager();
     const readme = `# ${appName}
 
-Created from the ${frameworkLabel(selectedFramework)} frontend template.
+Created from the ${frameworkDescription(selectedFramework)} frontend template.
 
 ## Install
 
@@ -440,6 +450,30 @@ function replaceInFile(filePath, searchValue, replacement) {
     writeFileSync(filePath, source.replace(searchValue, replacement.with));
 }
 
+function appendGitIgnoreEntries(entries) {
+    const gitIgnorePath = join(targetPath, '.gitignore');
+
+    if (!existsSync(gitIgnorePath)) {
+        writeFileSync(gitIgnorePath, `${entries.join('\n')}\n`);
+        return;
+    }
+
+    const source = readFileSync(gitIgnorePath, 'utf8');
+    const lines = new Set(source.split('\n').filter(Boolean));
+    let nextSource = source;
+
+    for (const entry of entries) {
+        if (lines.has(entry)) {
+            continue;
+        }
+
+        nextSource += nextSource.endsWith('\n') ? `${entry}\n` : `\n${entry}\n`;
+        lines.add(entry);
+    }
+
+    writeFileSync(gitIgnorePath, nextSource);
+}
+
 function toPackageName(value) {
     const name = value
         .trim()
@@ -539,9 +573,9 @@ function readNpmBooleanFlag(name) {
 function logFrameworkFileChanges() {
     if (selectedFramework === 'next') {
         console.log(
-            `- Next app router files: src/app/layout.tsx, src/app/page.tsx`
+            `- Next app router files: src/app/layout.tsx, src/app/[[...slug]]/*`
         );
-        console.log(`- src/app/global.css: app styles`);
+        console.log(`- src/app/global.css: app styles and client bootstrap`);
         console.log(`- Next config: next.config.mjs, next-env.d.ts`);
         console.log(
             `- Vite files removed: index.html, vite.config.mjs, src/main.tsx`
@@ -561,15 +595,18 @@ function writeNextAppFiles() {
     rmSync(join(targetPath, 'src/global.css'), { force: true });
 
     const appPath = join(targetPath, 'src/app');
+    const catchAllPath = join(appPath, '[[...slug]]');
     mkdirSync(appPath, { recursive: true });
+    mkdirSync(catchAllPath, { recursive: true });
 
     writeFileSync(join(targetPath, 'next-env.d.ts'), nextEnvTypes());
     writeFileSync(join(targetPath, 'next.config.mjs'), nextConfig());
     writeFileSync(join(targetPath, 'eslint.config.mjs'), nextEslintConfig());
     writeFileSync(join(targetPath, 'tsconfig.json'), nextTsconfig());
     writeFileSync(join(appPath, 'layout.tsx'), nextLayout());
-    writeFileSync(join(appPath, 'page.tsx'), nextPage());
     writeFileSync(join(appPath, 'global.css'), nextGlobalCss());
+    writeFileSync(join(catchAllPath, 'client.tsx'), nextClientPage());
+    writeFileSync(join(catchAllPath, 'page.tsx'), nextPage());
 }
 
 function frameworkLabel(framework) {
@@ -578,6 +615,17 @@ function frameworkLabel(framework) {
             return 'Vite';
         case 'next':
             return 'Next.js';
+        default:
+            fail(`Unsupported framework: ${framework}`);
+    }
+}
+
+function frameworkDescription(framework) {
+    switch (framework) {
+        case 'vite':
+            return 'Vite';
+        case 'next':
+            return 'Next.js App Router SPA';
         default:
             fail(`Unsupported framework: ${framework}`);
     }
@@ -624,7 +672,10 @@ function nextEnvTypes() {
 
 function nextConfig() {
     return `/** @type {import("next").NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    output: 'export',
+    distDir: './dist',
+};
 
 export default nextConfig;
 `;
@@ -638,7 +689,7 @@ export default [
     ...completeConfigBase,
 
     {
-        ignores: ['.next/**', 'node_modules/**'],
+        ignores: ['.next/**', 'dist/**', 'node_modules/**'],
     },
 
     {
@@ -667,6 +718,9 @@ export default [
     {
         files: ['src/app/**/*.tsx'],
         rules: {
+            'complete/no-mutable-return': 'off',
+            '@typescript-eslint/explicit-module-boundary-types': 'off',
+            'n/file-extension-in-import': 'off',
             'import-x/no-default-export': 'off',
         },
     },
@@ -739,13 +793,37 @@ export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
 `;
 }
 
-function nextPage() {
-    return `import type { JSX } from 'react';
+function nextClientPage() {
+    return `'use client';
+
+import type { JSX } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { App } from '@/components/App';
 
+const queryClient = new QueryClient();
+
+export function ClientOnly(): JSX.Element {
+    return (
+        <QueryClientProvider client={queryClient}>
+            <App />
+        </QueryClientProvider>
+    );
+}
+`;
+}
+
+function nextPage() {
+    return `import type { JSX } from 'react';
+
+import { ClientOnly } from './client';
+
+export function generateStaticParams() {
+    return [{ slug: [''] }];
+}
+
 export default function HomePage(): JSX.Element {
-    return <App />;
+    return <ClientOnly />;
 }
 `;
 }
