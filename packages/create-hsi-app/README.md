@@ -28,11 +28,5 @@ pnpm create hsi-app@latest
 bun create hsi-app@latest
 ```
 
-Pass the package manager flag after the initializer:
-
-```bash
-npm create hsi-app@latest -- --pnpm
-```
-
-Without a flag, the scaffolded app follows the package manager that invoked
-`create`. Direct execution without a package-manager wrapper falls back to Bun.
+Full CLI usage, flags, and repo/install behavior:
+[docs/create-hsi-app.md](https://github.com/Hsiii/frontend-template/blob/main/docs/create-hsi-app.md)

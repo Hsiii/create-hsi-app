@@ -42,19 +42,8 @@ pnpm create hsi-app@latest
 bun create hsi-app@latest
 ```
 
-The scaffolded app follows the package manager that invoked `create`. Pass a
-flag to override it explicitly:
-
-- `--bun`: writes `bunfig.toml` with `minimumReleaseAge = 604800`
-- `--npm`: writes `.npmrc` with `min-release-age=7`
-- `--pnpm`: writes `pnpm-workspace.yaml` with `minimumReleaseAge: 10080`
-- `--yarn`: writes `.yarnrc.yml` with `npmMinimalAgeGate: 7d`
-
-Example:
-
-```bash
-npm create hsi-app@latest --pnpm
-```
+Full CLI usage, flags, and repo/install behavior are documented in
+[`docs/create-hsi-app.md`](./docs/create-hsi-app.md).
 
 ## Scripts
 
