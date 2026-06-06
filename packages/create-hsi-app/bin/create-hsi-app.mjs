@@ -10,6 +10,7 @@ import {
 import { basename, join, resolve } from 'node:path';
 
 const templateRepo = 'https://github.com/Hsiii/frontend-template.git';
+const templateTag = 'v0.1.3';
 const defaultAppName = 'my-app';
 const targetArg = process.argv[2] ?? defaultAppName;
 const targetPath = resolve(targetArg);
@@ -19,7 +20,15 @@ if (existsSync(targetPath) && readdirSync(targetPath).length > 0) {
     fail(`Target directory is not empty: ${targetPath}`);
 }
 
-run('git', ['clone', '--depth', '1', templateRepo, targetPath]);
+run('git', [
+    'clone',
+    '--branch',
+    templateTag,
+    '--depth',
+    '1',
+    templateRepo,
+    targetPath,
+]);
 
 rmSync(join(targetPath, '.git'), { force: true, recursive: true });
 rmSync(join(targetPath, '.github'), { force: true, recursive: true });

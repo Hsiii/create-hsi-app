@@ -36,6 +36,26 @@ bun i
 bun run dev
 ```
 
+## Maintainers
+
+The root package is intentionally private. Only `create-hsi-app` is meant to
+be published.
+
+Release flow:
+
+1. Bump the version in the root [`package.json`](/Users/hsi/Documents/Projects/Archive/frontend-template/package.json:1)
+   and in [packages/create-hsi-app/package.json](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/package.json:1).
+2. Update `templateTag` in
+   [packages/create-hsi-app/bin/create-hsi-app.mjs](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/bin/create-hsi-app.mjs:12)
+   to the matching tag, then run `bun run check`.
+3. Create and push the matching git tag, for example `v0.1.3`.
+4. Publish npm: `cd packages/create-hsi-app && npm publish --registry=https://registry.npmjs.org`.
+5. Publish GitHub Packages alias as `@hsiii/create-hsi-app`. GitHub Packages
+   only supports scoped npm package names, so this mirror must stay scoped.
+6. Keep `hsi-app` deprecated on npm. GitHub Packages does not offer the same
+   npm deprecation flow; remove the legacy `@hsiii/hsi-app` package instead of
+   trying to attach a deprecation message there.
+
 ## Install
 
 ```bash
