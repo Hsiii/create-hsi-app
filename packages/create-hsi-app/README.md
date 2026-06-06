@@ -33,3 +33,6 @@ Pass the package manager flag after the initializer:
 ```bash
 npm create hsi-app@latest -- --pnpm
 ```
+
+Without a flag, the scaffolded app follows the package manager that invoked
+`create`. Direct execution without a package-manager wrapper falls back to Bun.

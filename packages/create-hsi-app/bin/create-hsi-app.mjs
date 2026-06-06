@@ -14,7 +14,7 @@ const templateTag = 'v0.2.0';
 const defaultAppName = 'my-app';
 const packageManagers = ['bun', 'npm', 'pnpm', 'yarn'];
 const rawArgs = process.argv.slice(2);
-const selectedPackageManager = parsePackageManagerFlag(rawArgs);
+const selectedPackageManager = resolvePackageManager(rawArgs);
 const targetArg = rawArgs.find((arg) => !arg.startsWith('--')) ?? '.';
 const targetPath = resolve(targetArg);
 const appName = toPackageName(basename(targetPath));
@@ -201,7 +201,7 @@ function toPackageName(value) {
     return name || defaultAppName;
 }
 
-function parsePackageManagerFlag(args) {
+function resolvePackageManager(args) {
     const selectedFlags = args.filter((arg) =>
         ['--bun', '--npm', '--pnpm', '--yarn'].includes(arg)
     );
@@ -218,11 +218,28 @@ function parsePackageManagerFlag(args) {
         case '--yarn':
             return 'yarn';
         case '--bun':
-        case undefined:
             return 'bun';
+        case undefined:
+            return detectPackageManager();
         default:
             fail(`Unsupported package manager flag: ${selectedFlags[0]}`);
     }
+}
+
+function detectPackageManager() {
+    const userAgent = process.env.npm_config_user_agent ?? '';
+
+    if (!userAgent) {
+        return 'bun';
+    }
+
+    const detectedPackageManager = userAgent.split(' ')[0]?.split('/')[0];
+
+    if (!packageManagers.includes(detectedPackageManager)) {
+        return 'bun';
+    }
+
+    return detectedPackageManager;
 }
 
 function packageManagerDeclaration() {

@@ -42,7 +42,8 @@ pnpm create hsi-app@latest
 bun create hsi-app@latest
 ```
 
-The package manager for the scaffolded app can be specified, default to bun:
+The scaffolded app follows the package manager that invoked `create`. Pass a
+flag to override it explicitly:
 
 - `--bun`: writes `bunfig.toml` with `minimumReleaseAge = 604800`
 - `--npm`: writes `.npmrc` with `min-release-age=7`
