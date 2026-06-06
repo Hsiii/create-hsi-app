@@ -71,9 +71,7 @@ function updatePackageJson() {
     delete packageJson.publishConfig;
     delete packageJson.packageManager;
     delete packageJson.engines;
-    delete packageJson.scripts['check:create'];
-    delete packageJson.scripts['check:release'];
-    delete packageJson.scripts['release:create'];
+    delete packageJson.scripts.release;
     packageJson.scripts.check =
         'tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && vite build';
     packageJson.packageManager = packageManagerDeclaration();

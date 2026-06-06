@@ -77,17 +77,16 @@ be published.
 
 Release flow:
 
-1. Start from a clean worktree on `main`, then run `npm run release:create`,
-   `pnpm run release:create`, `yarn run release:create`, or
-   `bun run release:create`.
+1. Start from a clean worktree on `main`, then run `npm run release`,
+   `pnpm run release`, `yarn run release`, or `bun run release`.
 2. Choose `patch`, `minor`, or `major` when prompted. The script bumps the
    root [`package.json`](/Users/hsi/Documents/Projects/Archive/frontend-template/package.json:1),
    [packages/create-hsi-app/package.json](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/package.json:1),
    and `templateTag` in
    [packages/create-hsi-app/bin/create-hsi-app.mjs](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/bin/create-hsi-app.mjs:12),
    then runs `check`, commits, tags, pushes `main`, and pushes the tag. Use
-   `npm run release:create -- --dry-run`, `pnpm run release:create -- --dry-run`,
-   `yarn run release:create --dry-run`, or `bun run release:create -- --dry-run`
+   `npm run release -- --dry-run`, `pnpm run release -- --dry-run`,
+   `yarn run release --dry-run`, or `bun run release -- --dry-run`
    to verify the flow without creating or pushing git objects.
 3. Publish npm manually: `cd packages/create-hsi-app && npm publish --registry=https://registry.npmjs.org --otp=<current-code>`.
 4. The matching `v*` tag publishes the GitHub Packages alias
