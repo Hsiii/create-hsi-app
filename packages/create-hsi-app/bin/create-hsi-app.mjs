@@ -15,8 +15,7 @@ const defaultAppName = 'my-app';
 const packageManagers = ['bun', 'npm', 'pnpm', 'yarn'];
 const rawArgs = process.argv.slice(2);
 const selectedPackageManager = parsePackageManagerFlag(rawArgs);
-const targetArg =
-    rawArgs.find((arg) => !arg.startsWith('--')) ?? defaultAppName;
+const targetArg = rawArgs.find((arg) => !arg.startsWith('--')) ?? '.';
 const targetPath = resolve(targetArg);
 const appName = toPackageName(basename(targetPath));
 
@@ -50,7 +49,9 @@ writeAppReadme();
 
 console.log(`\nCreated ${appName} in ${targetPath}\n`);
 console.log('Next steps:');
-console.log(`  cd ${targetArg}`);
+if (targetArg !== '.') {
+    console.log(`  cd ${targetArg}`);
+}
 console.log(`  ${installCommand()}`);
 console.log(`  ${devCommand()}`);
 
