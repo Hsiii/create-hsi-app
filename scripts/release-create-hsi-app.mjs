@@ -15,6 +15,7 @@ const createScriptPath = resolve(
     repoRoot,
     'packages/create-hsi-app/bin/create-hsi-app.mjs'
 );
+const createPackageDir = resolve(repoRoot, 'packages/create-hsi-app');
 
 const releaseTypes = /** @type {const} */ (['patch', 'minor', 'major']);
 const isDryRun = process.argv.includes('--dry-run');
@@ -67,16 +68,11 @@ async function main() {
     run('git', ['tag', nextTag]);
     run('git', ['push', 'origin', 'main']);
     run('git', ['push', 'origin', nextTag]);
+    loginToNpm();
+    publishToNpm();
 
     output.write(
-        [
-            '',
-            `Released ${nextTag}.`,
-            'Publish to public npm manually:',
-            '  cd packages/create-hsi-app',
-            '  npm publish --registry=https://registry.npmjs.org --otp=<current-code>',
-            '',
-        ].join('\n')
+        ['', `Released ${nextTag}.`, 'Published to public npm.', ''].join('\n')
     );
 }
 
@@ -170,7 +166,7 @@ function run(command, args, options = {}) {
 
     try {
         return execFileSync(command, args, {
-            cwd: repoRoot,
+            cwd: options.cwd ?? repoRoot,
             encoding: 'utf8',
             stdio,
         });
@@ -179,6 +175,26 @@ function run(command, args, options = {}) {
             `Failed to run: ${command} ${args.join(' ')}\n${error.stderr ?? error.message}`
         );
     }
+}
+
+function loginToNpm() {
+    output.write(
+        [
+            '',
+            'Starting npm login.',
+            'Press ENTER if npm prompts to open the browser for 2FA.',
+            '',
+        ].join('\n')
+    );
+    run('npm', ['login', '--registry=https://registry.npmjs.org'], {
+        cwd: createPackageDir,
+    });
+}
+
+function publishToNpm() {
+    run('npm', ['publish', '--registry=https://registry.npmjs.org'], {
+        cwd: createPackageDir,
+    });
 }
 
 function runPackageScript(scriptName) {

@@ -22,7 +22,8 @@ Only `create-hsi-app` is published to public npm.
     - create the matching `v*` tag
     - push `main`
     - push the tag
-5. Publish the package to public npm manually.
+    - run `npm login --registry=https://registry.npmjs.org`
+    - publish `packages/create-hsi-app` to public npm
 
 ## Dry Run
 
@@ -33,15 +34,17 @@ Use one of:
 - `yarn run release --dry-run`
 - `bun run release -- --dry-run`
 
-The dry run updates files and runs checks, but skips commit, tag, and push.
+The dry run updates files and runs checks, but skips commit, tag, push, npm
+login, and npm publish.
 
 ## npm Publish
 
-Public npm publish is manual:
+Public npm publish is performed by the release script. npm may prompt you to
+press ENTER to open the browser login flow before publishing.
 
 ```bash
-cd packages/create-hsi-app
-npm publish --registry=https://registry.npmjs.org --otp=<current-code>
+npm login --registry=https://registry.npmjs.org
+npm publish --registry=https://registry.npmjs.org
 ```
 
 ## Legacy Package
