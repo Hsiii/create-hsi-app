@@ -36,6 +36,8 @@ async function main() {
         fail(`Target directory is not empty: ${targetPath}`);
     }
 
+    console.log(`\nScaffolding ${appName} in ${targetPath}\n`);
+    logStep('Cloning template');
     run('git', [
         '-c',
         'advice.detachedHead=false',
@@ -61,21 +63,26 @@ async function main() {
     writeAppReadme();
 
     if (shouldInstallDependencies) {
+        logStep(`Installing dependencies with ${selectedPackageManager}`);
         installDependencies();
     }
 
     const repoSetup = await maybeSetupRepo();
 
     console.log(`\nCreated ${appName} in ${targetPath}\n`);
+    console.log('Summary:');
+    console.log(`  Package manager: ${selectedPackageManager}`);
     if (repoSetup === 'github') {
-        console.log(
-            'Created a local git repository and configured GitHub origin.'
-        );
+        console.log('  Git: initialized locally and connected to GitHub');
     } else if (repoSetup === 'local') {
-        console.log('Initialized a local git repository.');
+        console.log('  Git: initialized locally');
+    } else {
+        console.log('  Git: not initialized');
     }
     if (shouldInstallDependencies) {
-        console.log(`Installed dependencies with ${selectedPackageManager}.`);
+        console.log('  Dependencies: installed');
+    } else {
+        console.log('  Dependencies: not installed');
     }
     console.log('\nNext steps:');
     if (targetArg !== '.') {
@@ -85,6 +92,10 @@ async function main() {
         console.log(`  ${installCommand()}`);
     }
     console.log(`  ${devCommand()}`);
+}
+
+function logStep(message) {
+    console.log(`- ${message}`);
 }
 
 function run(command, args, options = {}) {
