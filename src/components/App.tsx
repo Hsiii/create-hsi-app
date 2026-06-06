@@ -6,7 +6,7 @@ export function App(): JSX.Element {
             <section className='app__content'>
                 <h1 className='app__title'>Vite, React, TypeScript.</h1>
                 <p className='app__description'>
-                    A minimal template for you to kick start your project
+                    create-hsi-app - kick start your frontend project.
                 </p>
             </section>
         </main>
