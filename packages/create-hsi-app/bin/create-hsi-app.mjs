@@ -75,6 +75,14 @@ async function main() {
     updateBunLock();
     console.log();
     section('Customizing project files');
+    console.log(`- package.json: name, version, scripts, packageManager`);
+    console.log(`- index.html: title`);
+    console.log(`- src/components/App.tsx: app name`);
+    console.log(`- README.md: install/dev/check commands`);
+    console.log(`- package manager config: ${packageManagerConfigFile()}`);
+    if (selectedPackageManager === 'bun') {
+        console.log(`- bun.lock: package name`);
+    }
     updateAppText();
     updatePackageManagerFiles();
     writeAppReadme();
@@ -536,6 +544,21 @@ function securityNoteForPackageManager() {
             return 'This project includes `pnpm-workspace.yaml` with `minimumReleaseAge: 10080`.';
         case 'yarn':
             return 'This project includes `.yarnrc.yml` with `npmMinimalAgeGate: 7d`.';
+        default:
+            fail(`Unsupported package manager: ${selectedPackageManager}`);
+    }
+}
+
+function packageManagerConfigFile() {
+    switch (selectedPackageManager) {
+        case 'bun':
+            return 'bunfig.toml';
+        case 'npm':
+            return '.npmrc';
+        case 'pnpm':
+            return 'pnpm-workspace.yaml';
+        case 'yarn':
+            return '.yarnrc.yml';
         default:
             fail(`Unsupported package manager: ${selectedPackageManager}`);
     }
