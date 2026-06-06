@@ -14,7 +14,18 @@
     --font-body-md: var(--fw-medium) var(--fs-body) / 1.6 var(--ff-body);
     --font-display: var(--fw-bold) var(--fs-title) / 0.94 var(--ff-display);
 
+    --space-8: 8px;
+    --space-12: 12px;
     --space-16: 16px;
     --space-24: 24px;
     --space-32: 32px;
+    --space-48: 48px;
+    --space-64: 64px;
+
+    --size-border-1: 1px;
+    --size-outline: 2px;
+    --size-content-max: 720px;
+    --measure-copy: 36ch;
+
+    --radius-24: 24px;
 }
