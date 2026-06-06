@@ -38,7 +38,7 @@ export function ready(appName, lines) {
     console.log();
     console.log(color.green(`App scaffolded: ${appName}`));
     console.log();
-    console.log(color.magentaBright('Next steps'));
+    section('Next steps');
     console.log();
 
     for (const line of lines) {
