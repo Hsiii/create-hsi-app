@@ -1,138 +1,138 @@
 # Frontend Template
 
-A reusable frontend baseline for new apps. The supported create entrypoints are
-`npm create`, `pnpm create`, `yarn create`, and `bun create`.
+Scaffold an opinionated Vite + React + TypeScript frontend with strict checks,
+curated defaults, and package-age gating.
 
-The template includes:
+## What This Is
 
-- Bun, npm, pnpm, or Yarn package management
-- Vite for dev/build
+This repo has two roles:
+
+- `create-hsi-app`: the published CLI entrypoint for starting a new app
+- `frontend-template`: the source template that the CLI clones and rewrites
+
+The generated app stays intentionally small, but it comes with enough structure
+to start building immediately.
+
+## What You Get
+
+Every generated app includes:
+
+- Vite
 - React 19
 - TypeScript 6
 - TanStack React Query
-- Lucide React for icons
-- ESLint with eslint-config-complete
+- Lucide React
+- ESLint with `eslint-config-complete`
 - Prettier with sorted imports
-- VS Code extension recommendations for spellcheck and CSS nesting syntax highlighting
-- VS Code settings for format-on-save and explicit ESLint fixes on save
+- VS Code recommendations and settings
+- Package-manager-specific package-age gating defaults
 
-## Usage
+## Getting Started
 
-Create a new app with npm:
+Run any one of these:
+
+### npm
+
+```bash
+npm create hsi-app@latest
+```
+
+### yarn
+
+```bash
+yarn create hsi-app
+```
+
+### pnpm
+
+```bash
+pnpm create hsi-app@latest
+```
+
+### bun
+
+```bash
+bun create hsi-app@latest
+```
+
+You can also pass a target directory:
 
 ```bash
 npm create hsi-app@latest my-app
+```
+
+After scaffolding:
+
+```bash
 cd my-app
 bun install
 bun run dev
 ```
 
-Create a new app with pnpm:
+## Package Manager Choice
+
+The CLI can tailor the generated app for a specific package manager:
+
+- `--bun`: default
+- `--npm`: writes `.npmrc` with `min-release-age=7`
+- `--pnpm`: writes `pnpm-workspace.yaml` with `minimumReleaseAge: 10080`
+- `--yarn`: writes `.yarnrc.yml` with `npmMinimalAgeGate: 7d`
+
+Examples:
 
 ```bash
 pnpm create hsi-app my-app --pnpm
-cd my-app
-pnpm install
-pnpm run dev
-```
-
-Create a new app with Yarn:
-
-```bash
 yarn create hsi-app my-app --yarn
-cd my-app
-yarn install
-yarn dev
-```
-
-Create a new app with Bun:
-
-```bash
 bun create hsi-app my-app --bun
-cd my-app
-bun install
-bun run dev
 ```
 
-Create a new app from the GitHub template:
+## Defaults
+
+This template is opinionated in a few specific ways:
+
+- strict `typecheck`, `lint`, `format:check`, and `build` coverage through
+  `check`
+- package-manager-aware package-age gating to reduce supply-chain risk
+- minimal starter surface, with repo-only tooling stripped from generated apps
+
+## GitHub Template Fallback
+
+If you want the raw template repository instead of the CLI flow:
 
 ```bash
 gh repo create my-app --template Hsiii/frontend-template --clone
-cd my-app
-bun install
-bun run dev
 ```
 
-Package-manager flags:
+Use this as a fallback. The `create-hsi-app` path is cleaner because it rewrites
+app identity, applies package-manager-specific config, and removes repo-only
+tooling.
 
-- `--bun`: default
-- `--npm`: write `.npmrc` with `min-release-age=7`
-- `--pnpm`: write `pnpm-workspace.yaml` with `minimumReleaseAge: 10080`
-- `--yarn`: write `.yarnrc.yml` with `npmMinimalAgeGate: 7d`
+## FAQ
 
-## Maintainers
+### Why `hsi-app` for `create` but `create-hsi-app` on npm?
 
-The root package is intentionally private. Only `create-hsi-app` is meant to
-be published.
+`npm create hsi-app`, `pnpm create hsi-app`, `yarn create hsi-app`, and
+`bun create hsi-app` resolve to the package named `create-hsi-app`.
 
-Release flow:
+### Why is package-age gating part of the template?
 
-1. Start from a clean worktree on `main`, then run `npm run release`,
-   `pnpm run release`, `yarn run release`, or `bun run release`.
-2. Choose `patch`, `minor`, or `major` when prompted. The script bumps the
-   root [`package.json`](/Users/hsi/Documents/Projects/Archive/frontend-template/package.json:1),
-   [packages/create-hsi-app/package.json](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/package.json:1),
-   and `templateTag` in
-   [packages/create-hsi-app/bin/create-hsi-app.mjs](/Users/hsi/Documents/Projects/Archive/frontend-template/packages/create-hsi-app/bin/create-hsi-app.mjs:12),
-   then runs `check`, commits, tags, pushes `main`, and pushes the tag. Use
-   `npm run release -- --dry-run`, `pnpm run release -- --dry-run`,
-   `yarn run release --dry-run`, or `bun run release -- --dry-run`
-   to verify the flow without creating or pushing git objects.
-3. Publish npm manually: `cd packages/create-hsi-app && npm publish --registry=https://registry.npmjs.org --otp=<current-code>`.
-4. The matching `v*` tag publishes the GitHub Packages alias
-   `@hsiii/create-hsi-app` automatically. GitHub Packages only supports scoped
-   npm package names, so this mirror must stay scoped.
-5. Keep `hsi-app` deprecated on npm. GitHub Packages does not offer the same
-   npm deprecation flow; remove the legacy `@hsiii/hsi-app` package instead of
-   trying to attach a deprecation message there.
+It is one of the few defaults here that directly reduces risk. New apps start
+with a delay gate for freshly published packages instead of leaving that choice
+to every downstream repo.
 
-The repo-only tooling under `.github/workflows/` and `scripts/` is ignored by
-npm tarballs and removed by `create-hsi-app`. Direct GitHub template clones
-will still include it.
+### Why use the CLI instead of cloning the template repo directly?
 
-## Install
-
-```bash
-bun install
-# or pnpm install
-# or yarn install
-```
-
-For Bun users, this project uses `bunfig.toml` to enforce:
-
-```toml
-[install]
-minimumReleaseAge = 604800
-```
-
-That blocks packages newer than 7 days to reduce exposure to supply-chain attacks.
+The CLI removes `.git`, `.github`, `packages/`, and other repo-only files,
+rewrites package metadata, and keeps the generated app closer to what you
+actually want to ship.
 
 ## Scripts
 
-- `bun run dev` / `pnpm dev` / `yarn dev`: starts the Vite dev server
-- `bun run build` / `pnpm build` / `yarn build`: creates a production build
-- `bun run preview` / `pnpm preview` / `yarn preview`: serves the built app locally
-- `bun run typecheck` / `pnpm typecheck` / `yarn typecheck`: runs TypeScript without emitting files
-- `bun run lint` / `pnpm lint` / `yarn lint`: runs ESLint across the repo
-- `bun run lint:fix` / `pnpm lint:fix` / `yarn lint:fix`: applies auto-fixable ESLint changes
-- `bun run format` / `pnpm format` / `yarn format`: formats the repo with Prettier
-- `bun run format:check` / `pnpm format:check` / `yarn format:check`: verifies formatting without changing files
-- `bun run check` / `pnpm run check` / `yarn run check`: runs typecheck, lint, format verification, and production build
+- `dev`: start the Vite dev server
+- `build`: create a production build
+- `preview`: serve the build locally
+- `check`: run typecheck, lint, format verification, and production build
+- `release`: bump versions, update `templateTag`, run checks, commit, tag, and
+  push
 
-## Source Structure
-
-- `src/components/`: React components, including the root `App.tsx`
-- `src/constants/`: shared constants and CSS tokens
-- `src/hooks/`: reusable hooks
-- `src/global.css`: the only stylesheet outside of `components/`
-- `src/main.tsx`: app entry point
+Maintainer docs live in [docs/releasing.md](docs/releasing.md).
