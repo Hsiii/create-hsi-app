@@ -59,6 +59,10 @@ jobs:
                     path.join(sourceDir, 'bin', 'create-hsi-app.mjs'),
                     path.join(outputDir, 'bin', 'create-hsi-app.mjs')
                   );
+                  fs.copyFileSync(
+                    path.join(sourceDir, 'README.md'),
+                    path.join(outputDir, 'README.md')
+                  );
 
                   const packageJsonPath = path.join(sourceDir, 'package.json');
                   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));

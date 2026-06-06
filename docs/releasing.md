@@ -1,7 +1,8 @@
 # Releasing
 
 This repo is template source plus release tooling. The root package is private.
-Only `create-hsi-app` is published.
+Public npm publishes `create-hsi-app`; GitHub Packages publishes the scoped
+mirror `@hsiii/create-hsi-app`.
 
 ## Release Flow
 
@@ -43,6 +44,16 @@ GitHub Packages is tag-driven. Public npm publish is still manual:
 ```bash
 cd packages/create-hsi-app
 npm publish --registry=https://registry.npmjs.org --otp=<current-code>
+```
+
+## GitHub Packages Usage
+
+GitHub's generated package install box shows dependency-install syntax. The
+package README is included in the scoped package so the package page also shows
+the actual scaffold command:
+
+```bash
+npm create @hsiii/hsi-app@latest --registry=https://npm.pkg.github.com
 ```
 
 ## Legacy Package
