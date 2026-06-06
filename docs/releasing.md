@@ -11,8 +11,10 @@ Only `create-hsi-app` is published to public npm.
     - `pnpm run release`
     - `yarn run release`
     - `bun run release`
-3. Choose `patch`, `minor`, or `major`.
-4. The script will:
+3. If the current version is not yet on npm, choose whether to release it as-is
+   or bump first.
+4. Otherwise choose `patch`, `minor`, or `major`.
+5. The script will:
     - bump the root `package.json` version
     - bump `packages/create-hsi-app/package.json`
     - update `templateTag` in
@@ -24,6 +26,7 @@ Only `create-hsi-app` is published to public npm.
     - push the tag
     - run `npm login --registry=https://registry.npmjs.org`
     - publish `packages/create-hsi-app` to public npm
+    - skip the release commit if no version files changed
 
 ## Dry Run
 

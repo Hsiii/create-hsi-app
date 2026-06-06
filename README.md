@@ -3,6 +3,7 @@
 Interactive CLI to kick start a frontend project.
 
 ## The Stack
+
 A opinionated web development stack focused on simplicity:
 
 - Vite
