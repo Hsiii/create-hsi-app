@@ -17,8 +17,11 @@ Run the local CLI end-to-end with a temporary target directory:
 bun run smoke
 ```
 
-Pass through normal CLI flags when needed:
+That runs the full interactive flow, including git/GitHub setup when available.
+
+Skip repo setup or pass through other CLI flags when needed:
 
 ```bash
+bun run smoke -- --noRepo
 bun run smoke -- --npm --noInstall
 ```

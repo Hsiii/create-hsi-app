@@ -13,7 +13,6 @@ const cliScriptPath = resolve(
 const rawArgs = process.argv.slice(2);
 const passthroughArgs = [];
 let shouldSkipInstall = false;
-let shouldSkipRepo = false;
 let packageManager = 'bun';
 
 for (const arg of rawArgs) {
@@ -21,19 +20,11 @@ for (const arg of rawArgs) {
         shouldSkipInstall = true;
     }
 
-    if (arg === '--noRepo') {
-        shouldSkipRepo = true;
-    }
-
     if (['--bun', '--npm', '--pnpm', '--yarn'].includes(arg)) {
         packageManager = arg.slice(2);
     }
 
     passthroughArgs.push(arg);
-}
-
-if (!shouldSkipRepo) {
-    passthroughArgs.unshift('--noRepo');
 }
 
 const hasExplicitPackageManager = rawArgs.some((arg) =>
