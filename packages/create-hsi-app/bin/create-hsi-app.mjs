@@ -24,7 +24,7 @@ import {
 } from './ui.mjs';
 
 const templateRepo = 'https://github.com/Hsiii/frontend-template.git';
-const templateTag = 'v0.6.1';
+const templateTag = 'v0.7.0';
 const defaultAppName = 'my-app';
 const packageManagers = ['bun', 'npm', 'pnpm', 'yarn'];
 const nextVersion = '16.2.7';
