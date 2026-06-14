@@ -1,6 +1,9 @@
 @import './constants/color.css';
 @import './constants/font.css';
 
+/* Keep global.css for resets, tokens, and app shell. Put component CSS next to
+   its component, like components/Nav.tsx with components/Nav.css. */
+
 * {
     margin: 0;
     padding: 0;

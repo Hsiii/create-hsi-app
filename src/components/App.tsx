@@ -1,6 +1,8 @@
 import type { JSX } from 'react';
 
 export function App(): JSX.Element {
+    // Keep App.tsx coordinating screens and providers. Extract components early so this never
+    // becomes a 3,000-line god file.
     return (
         <main className='app'>
             <section className='app__content'>

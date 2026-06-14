@@ -646,6 +646,8 @@ function appComponent() {
     return `import type { JSX } from 'react';
 
 export function App(): JSX.Element {
+    // Keep App.tsx coordinating screens and providers. Extract components early
+    // so this never becomes a 3,000-line god file.
     return (
         <main className='app'>
             <section className='app__content'>
@@ -831,6 +833,9 @@ export default function HomePage(): JSX.Element {
 function nextGlobalCss() {
     return `@import '../constants/color.css';
 @import '../constants/font.css';
+
+/* Keep global.css for resets, tokens, and app shell. Put component CSS next to
+   its component, like components/Nav.tsx with components/Nav.css. */
 
 * {
     margin: 0;
