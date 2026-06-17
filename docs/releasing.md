@@ -6,27 +6,32 @@ Only `create-hsi-app` is published to public npm.
 ## Release Flow
 
 1. Start from a clean worktree on `main`.
-2. Run one of:
+2. Make sure GitHub CLI is installed and authenticated:
+    - `gh auth status`
+3. Run one of:
     - `npm run release`
     - `pnpm run release`
     - `yarn run release`
     - `bun run release`
-3. If the current version is not yet on npm, choose whether to release it as-is
+4. If the current version is not yet on npm, choose whether to release it as-is
    or bump first.
-4. Otherwise choose `patch`, `minor`, or `major`.
-5. The script will:
+5. Otherwise choose `patch`, `minor`, or `major`.
+6. The script will:
     - bump the root `package.json` version
     - bump `packages/create-hsi-app/package.json`
     - update `templateTag` in
       `packages/create-hsi-app/bin/create-hsi-app.mjs`
     - run `check`
+    - verify GitHub CLI can create a GitHub release
     - commit
     - create the matching `v*` tag
     - push `main`
     - push the tag
     - run `npm login --registry=https://registry.npmjs.org`
     - publish `packages/create-hsi-app` to public npm
+    - create a matching GitHub release from the pushed tag
     - skip the release commit if no version files changed
+    - skip the GitHub release if it already exists
     - require a version bump when the matching `v*` tag already exists on a
       different commit
 
@@ -39,8 +44,17 @@ Use one of:
 - `yarn run release --dry-run`
 - `bun run release -- --dry-run`
 
-The dry run updates files and runs checks, but skips commit, tag, push, npm
-login, and npm publish.
+The dry run updates files and runs checks, but skips commit, tag, push, GitHub
+release, npm login, and npm publish.
+
+## GitHub Release
+
+GitHub release creation uses the existing tag source archives. It does not
+publish a GitHub Package or upload npm artifacts.
+
+```bash
+gh release create v0.8.0 --title v0.8.0 --notes "Source release for create-hsi-app v0.8.0." --verify-tag
+```
 
 ## npm Publish
 

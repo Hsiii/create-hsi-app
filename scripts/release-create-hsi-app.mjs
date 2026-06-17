@@ -57,6 +57,9 @@ async function main() {
     updateTemplateTag(nextTag);
 
     runPackageScript('check');
+    if (!isDryRun) {
+        assertGitHubReleasePrereqs();
+    }
     run('git', ['add', 'package.json']);
     run('git', ['add', 'packages/create-hsi-app/package.json']);
     run('git', ['add', 'packages/create-hsi-app/bin/create-hsi-app.mjs']);
@@ -65,7 +68,7 @@ async function main() {
             [
                 '',
                 `Dry run prepared ${nextTag}.`,
-                'Skipped git commit, tag, and push.',
+                'Skipped git commit, tag, push, GitHub release, and npm publish.',
                 '',
             ].join('\n')
         );
@@ -84,9 +87,16 @@ async function main() {
     run('git', ['push', 'origin', nextTag]);
     loginToNpm();
     publishToNpm();
+    createGitHubRelease(nextTag);
 
     output.write(
-        ['', `Released ${nextTag}.`, 'Published to public npm.', ''].join('\n')
+        [
+            '',
+            `Released ${nextTag}.`,
+            'Published to public npm.',
+            'Published source release to GitHub.',
+            '',
+        ].join('\n')
     );
 }
 
@@ -380,6 +390,57 @@ function publishToNpm() {
     run('npm', ['publish', '--registry=https://registry.npmjs.org'], {
         cwd: createPackageDir,
     });
+}
+
+function assertGitHubReleasePrereqs() {
+    const versionResult = run('gh', ['--version'], {
+        capture: true,
+        allowFailure: true,
+    });
+
+    if (versionResult.code !== 0) {
+        throw new Error(
+            'GitHub CLI is required to create the GitHub source release. Install gh and try again.'
+        );
+    }
+
+    const authResult = run('gh', ['auth', 'status'], {
+        capture: true,
+        allowFailure: true,
+    });
+
+    if (authResult.code !== 0) {
+        throw new Error(
+            'GitHub CLI is not authenticated. Run `gh auth login` and try again.'
+        );
+    }
+}
+
+function createGitHubRelease(tag) {
+    if (githubReleaseExists(tag)) {
+        output.write(`GitHub release ${tag} already exists. Skipping.\n`);
+        return;
+    }
+
+    run('gh', [
+        'release',
+        'create',
+        tag,
+        '--title',
+        tag,
+        '--notes',
+        `Source release for create-hsi-app ${tag}.`,
+        '--verify-tag',
+    ]);
+}
+
+function githubReleaseExists(tag) {
+    const result = run('gh', ['release', 'view', tag, '--json', 'tagName'], {
+        capture: true,
+        allowFailure: true,
+    });
+
+    return result.code === 0;
 }
 
 function runPackageScript(scriptName) {
