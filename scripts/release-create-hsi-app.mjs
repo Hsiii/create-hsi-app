@@ -57,8 +57,21 @@ async function main() {
     updateTemplateTag(nextTag);
 
     runPackageScript('check');
+    let githubReleaseNotes = '';
+    let previousReleaseTag = null;
     if (!isDryRun) {
         assertGitHubReleasePrereqs();
+        previousReleaseTag = getPreviousReleaseTag(nextTag);
+
+        if (!githubReleaseExists(nextTag)) {
+            printReleaseCommits(previousReleaseTag);
+            const releaseBullets = await promptReleaseBullets();
+            githubReleaseNotes = createGitHubReleaseNotes(
+                nextTag,
+                previousReleaseTag,
+                releaseBullets
+            );
+        }
     }
     run('git', ['add', 'package.json']);
     run('git', ['add', 'packages/create-hsi-app/package.json']);
@@ -87,7 +100,7 @@ async function main() {
     run('git', ['push', 'origin', nextTag]);
     loginToNpm();
     publishToNpm();
-    createGitHubRelease(nextTag);
+    createGitHubRelease(nextTag, githubReleaseNotes);
 
     output.write(
         [
@@ -317,6 +330,38 @@ function getLocalTagCommit(tag) {
     return result.stdout.trim();
 }
 
+function getPreviousReleaseTag(nextTag) {
+    const tags = run('git', ['tag', '--list', 'v[0-9]*', '--sort=-v:refname'], {
+        capture: true,
+    })
+        .trim()
+        .split('\n')
+        .filter(Boolean);
+
+    return tags.find((tag) => tag !== nextTag) ?? null;
+}
+
+function printReleaseCommits(previousReleaseTag) {
+    const releaseCommits = getReleaseCommits(previousReleaseTag);
+    const heading = previousReleaseTag
+        ? `Commits since ${previousReleaseTag}:`
+        : 'Commits in this release:';
+
+    output.write(
+        ['', heading, releaseCommits || '  No commits found.', ''].join('\n')
+    );
+}
+
+function getReleaseCommits(previousReleaseTag) {
+    const args = ['log', '--reverse', '--format=  - %h %s'];
+
+    if (previousReleaseTag) {
+        args.splice(1, 0, `${previousReleaseTag}..HEAD`);
+    }
+
+    return run('git', args, { capture: true }).trim();
+}
+
 function isVersionPublished(version) {
     const result = run(
         'npm',
@@ -372,6 +417,40 @@ async function promptYesNo(rl, label, defaultValue) {
     }
 }
 
+async function promptReleaseBullets() {
+    const rl = readline.createInterface({ input, output });
+    const releaseBullets = [];
+
+    try {
+        output.write(
+            'Describe this release. Each answer becomes one GitHub release bullet.\n'
+        );
+
+        while (true) {
+            const bullet = (await rl.question('Release note bullet: ')).trim();
+
+            if (!bullet) {
+                output.write('Enter a bullet point.\n');
+                continue;
+            }
+
+            releaseBullets.push(bullet);
+
+            const shouldAddAnotherBullet = await promptYesNo(
+                rl,
+                'Add another bullet point?',
+                false
+            );
+
+            if (!shouldAddAnotherBullet) {
+                return releaseBullets;
+            }
+        }
+    } finally {
+        rl.close();
+    }
+}
+
 function loginToNpm() {
     output.write(
         [
@@ -416,7 +495,7 @@ function assertGitHubReleasePrereqs() {
     }
 }
 
-function createGitHubRelease(tag) {
+function createGitHubRelease(tag, releaseNotes) {
     if (githubReleaseExists(tag)) {
         output.write(`GitHub release ${tag} already exists. Skipping.\n`);
         return;
@@ -429,9 +508,40 @@ function createGitHubRelease(tag) {
         '--title',
         tag,
         '--notes',
-        `Source release for create-hsi-app ${tag}.`,
+        releaseNotes,
         '--verify-tag',
     ]);
+}
+
+function createGitHubReleaseNotes(tag, previousReleaseTag, releaseBullets) {
+    const generatedNotes = getGeneratedGitHubReleaseNotes(
+        tag,
+        previousReleaseTag
+    );
+    const manualNotes = releaseBullets
+        .map((releaseBullet) => `- ${releaseBullet}`)
+        .join('\n');
+
+    return [`## What Changed:`, manualNotes, generatedNotes].join('\n\n');
+}
+
+function getGeneratedGitHubReleaseNotes(tag, previousReleaseTag) {
+    const args = [
+        'api',
+        'repos/{owner}/{repo}/releases/generate-notes',
+        '--method',
+        'POST',
+        '--field',
+        `tag_name=${tag}`,
+        '--jq',
+        '.body',
+    ];
+
+    if (previousReleaseTag) {
+        args.push('--field', `previous_tag_name=${previousReleaseTag}`);
+    }
+
+    return run('gh', args, { capture: true }).trim();
 }
 
 function githubReleaseExists(tag) {

@@ -23,6 +23,8 @@ Only `create-hsi-app` is published to public npm.
       `packages/create-hsi-app/bin/create-hsi-app.mjs`
     - run `check`
     - verify GitHub CLI can create a GitHub release
+    - list commits added since the previous `v*` release tag
+    - ask for one or more release-note bullet points
     - commit
     - create the matching `v*` tag
     - push `main`
@@ -52,8 +54,23 @@ release, npm login, and npm publish.
 GitHub release creation uses the existing tag source archives. It does not
 publish a GitHub Package or upload npm artifacts.
 
+Before pushing or publishing, the release script prints the commits since the
+previous `v*` release tag and prompts for release-note bullets. It uses those
+bullets first, then appends GitHub's generated release notes.
+
+The release body format is:
+
+```md
+## What Changed:
+
+- Your release bullet
+- Another release bullet
+
+GitHub generated release notes...
+```
+
 ```bash
-gh release create v0.8.0 --title v0.8.0 --notes "Source release for create-hsi-app v0.8.0." --verify-tag
+gh release create v0.8.0 --title v0.8.0 --notes "$RELEASE_NOTES" --verify-tag
 ```
 
 ## npm Publish
