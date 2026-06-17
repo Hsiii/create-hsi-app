@@ -1,4 +1,3 @@
-/* eslint-disable complete/no-template-curly-in-string-fix, unicorn/prefer-string-raw */
 const syncCreateHsiAppVersion = `node -e ${JSON.stringify(`
 const fs = require('node:fs');
 const root = JSON.parse(fs.readFileSync('package.json', 'utf8'));

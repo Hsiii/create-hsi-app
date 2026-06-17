@@ -8,6 +8,7 @@ export default [
             'dist/**',
             'node_modules/**',
             'packages/create-hsi-app/**',
+            'release-it*.config.cjs',
             'scripts/**',
         ],
     },
