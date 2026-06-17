@@ -8,7 +8,7 @@
         "url": "git+https://github.com/Hsiii/frontend-template.git"
     },
     "scripts": {
-        "prepare": "node scripts/setup-git-hooks.mjs",
+        "prepare": "husky",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
@@ -20,6 +20,14 @@
         "release": "node scripts/release-create-hsi-app.mjs",
         "smoke": "node scripts/smoke-create-hsi-app.mjs",
         "check": "tsc -p tsconfig.json --noEmit && eslint . && node --check packages/create-hsi-app/bin/create-hsi-app.mjs && node --check scripts/release-create-hsi-app.mjs && node --check scripts/smoke-create-hsi-app.mjs && prettier . --check && vite build"
+    },
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx,css,scss,html,json,md,yml,yaml}": [
+            "prettier --write"
+        ],
+        "*.{js,jsx,ts,tsx}": [
+            "eslint --fix"
+        ]
     },
     "dependencies": {
         "@tanstack/react-query": "5.101.0",
@@ -36,6 +44,8 @@
         "eslint": "10.4.1",
         "eslint-config-complete": "4.8.0",
         "eslint-import-resolver-typescript": "4.4.5",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.0.7",
         "prettier": "3.8.3",
         "typescript": "6.0.3",
         "vite": "8.0.16"
